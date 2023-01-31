@@ -4,6 +4,7 @@ from models import Payment, Transaction
 from mongoengine import connect, disconnect
 import json
 import logging
+from datetime import datetime
 
 logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 config = configparser.ConfigParser()
@@ -11,8 +12,6 @@ config.read("config.ini")
 
 project_token = config["MIXPANEL"]["project_token"]
 api_key = config["MIXPANEL"]["api_key"]
-
-from datetime import datetime
 
 
 mp = Mixpanel(project_token)
