@@ -4,7 +4,7 @@ import gzip
 import bson
 import os
 from config import MIXPANEL_IMPORT_STRUCTURE, LOG_FORMAT
-import main
+import mixpanel_import
 from datetime import datetime
 
 
@@ -50,48 +50,8 @@ def start():
                         f"--->{count}/{len(collection)} of documents imported to mixpanel",
                         end="\r",
                     )
-                    obj = {
-                        "distinct_id": document[
-                            MIXPANEL_IMPORT_STRUCTURE[collection_name]["distinct_id"]
-                        ],
-                        "event_name": MIXPANEL_IMPORT_STRUCTURE[collection_name][
-                            "event_name"
-                        ],
-                        "timestamp": document[
-                            MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
-                        ].timestamp(),
-                        "props": {
-                            **{
-                                key["name"]: document[key["name"]]
-                                if key["name"] in document
-                                else key["default"]
-                                for key in MIXPANEL_IMPORT_STRUCTURE[collection_name][
-                                    "props"
-                                ]
-                            },
-                            **{
-                                "$insert_id": document[
-                                    MIXPANEL_IMPORT_STRUCTURE[collection_name][
-                                        "$insert_id"
-                                    ]
-                                ]
-                            },
-                        },
-                    }
-                    main.import_data(
-                        obj["distinct_id"],
-                        obj["event_name"],
-                        obj["timestamp"],
-                        obj["props"],
-                    )
-                    logging.info(
-                        LOG_FORMAT.format(
-                            **{
-                                "from": f"Mongodb dump, {file}",
-                                "data": json.dumps(obj, indent=4, default=str),
-                                "time": datetime.now(),
-                            }
-                        )
+                    mixpanel_import.import_data(
+                        document, collection_name, f"Mongodb dump, {file}"
                     )
     except Exception as e:
         print(e)

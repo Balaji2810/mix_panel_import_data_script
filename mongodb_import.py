@@ -3,7 +3,7 @@ from models import Payment, Transaction
 from mongoengine import connect, disconnect
 import json
 import logging
-import main
+import mixpanel_import
 from config import MIXPANEL_IMPORT_STRUCTURE, LOG_FORMAT
 from datetime import datetime
 
@@ -33,45 +33,7 @@ def fetch_and_upload_payments(skip=0):
         collection_name = "payments"
         document = payment.to_mongo().to_dict()
         document["_id"] = str(document["_id"])
-        obj = {
-            "distinct_id": document[
-                MIXPANEL_IMPORT_STRUCTURE[collection_name]["distinct_id"]
-            ],
-            "event_name": MIXPANEL_IMPORT_STRUCTURE[collection_name]["event_name"],
-            "timestamp": document[
-                MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
-            ].timestamp(),
-            "props": {
-                **{
-                    key["name"]: document[key["name"]]
-                    if key["name"] in document
-                    else key["default"]
-                    for key in MIXPANEL_IMPORT_STRUCTURE[collection_name]["props"]
-                },
-                **{
-                    "$insert_id": document[
-                        MIXPANEL_IMPORT_STRUCTURE[collection_name]["$insert_id"]
-                    ]
-                },
-            },
-        }
-
-        main.import_data(
-            obj["distinct_id"],
-            obj["event_name"],
-            obj["timestamp"],
-            obj["props"],
-        )
-
-        logging.info(
-            LOG_FORMAT.format(
-                **{
-                    "from": f"Mongodb, Payments",
-                    "data": json.dumps(obj, indent=4, default=str),
-                    "time": datetime.now(),
-                }
-            )
-        )
+        mixpanel_import.import_data(document, collection_name, "Mongodb, Payments")
         set_last_entry("Payment", count + skip + 1)
 
 
@@ -80,45 +42,7 @@ def fetch_and_upload_transactions(skip=0):
         collection_name = "transactions"
         document = transaction.to_mongo().to_dict()
         document["_id"] = str(document["_id"])
-        obj = {
-            "distinct_id": document[
-                MIXPANEL_IMPORT_STRUCTURE[collection_name]["distinct_id"]
-            ],
-            "event_name": MIXPANEL_IMPORT_STRUCTURE[collection_name]["event_name"],
-            "timestamp": document[
-                MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
-            ].timestamp(),
-            "props": {
-                **{
-                    key["name"]: document[key["name"]]
-                    if key["name"] in document
-                    else key["default"]
-                    for key in MIXPANEL_IMPORT_STRUCTURE[collection_name]["props"]
-                },
-                **{
-                    "$insert_id": document[
-                        MIXPANEL_IMPORT_STRUCTURE[collection_name]["$insert_id"]
-                    ]
-                },
-            },
-        }
-
-        main.import_data(
-            obj["distinct_id"],
-            obj["event_name"],
-            obj["timestamp"],
-            obj["props"],
-        )
-
-        logging.info(
-            LOG_FORMAT.format(
-                **{
-                    "from": f"Mongodb, transactions",
-                    "data": json.dumps(obj, indent=4, default=str),
-                    "time": datetime.now(),
-                }
-            )
-        )
+        mixpanel_import.import_data(document, collection_name, "Mongodb, transactions")
         set_last_entry("Transaction", count + skip + 1)
 
 
