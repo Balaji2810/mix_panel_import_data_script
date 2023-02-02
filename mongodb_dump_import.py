@@ -75,7 +75,6 @@ def start():
                                         "$insert_id"
                                     ]
                                 ]
-                                + "B5"
                             },
                         },
                     }
