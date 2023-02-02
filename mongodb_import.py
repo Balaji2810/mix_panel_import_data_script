@@ -4,6 +4,8 @@ from mongoengine import connect, disconnect
 import json
 import logging
 import main
+from config import MIXPANEL_IMPORT_STRUCTURE, LOG_FORMAT
+from datetime import datetime
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -27,63 +29,95 @@ def set_last_entry(name, last_entry):
 
 
 def fetch_and_upload_payments(skip=0):
-    for count, payment in enumerate(
-        Payment.objects.only("user", "timestamp", "amount", "credits").skip(skip)
-    ):
-        props = {
-            "amount": payment.amount,
-            "credits": payment.credits,
+    for count, payment in enumerate(Payment.objects.skip(skip)):
+        collection_name = "payments"
+        document = payment.to_mongo().to_dict()
+        document["_id"] = str(document["_id"])
+        obj = {
+            "distinct_id": document[
+                MIXPANEL_IMPORT_STRUCTURE[collection_name]["distinct_id"]
+            ],
+            "event_name": MIXPANEL_IMPORT_STRUCTURE[collection_name]["event_name"],
+            "timestamp": document[
+                MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
+            ].timestamp(),
+            "props": {
+                **{
+                    key["name"]: document[key["name"]]
+                    if key["name"] in document
+                    else key["default"]
+                    for key in MIXPANEL_IMPORT_STRUCTURE[collection_name]["props"]
+                },
+                **{
+                    "$insert_id": document[
+                        MIXPANEL_IMPORT_STRUCTURE[collection_name]["$insert_id"]
+                    ]
+                },
+            },
         }
 
-        main.import_data(payment.user, "Payment", payment.timestamp.timestamp(), props)
-        print(count + skip + 1, props, payment.timestamp)
+        main.import_data(
+            obj["distinct_id"],
+            obj["event_name"],
+            obj["timestamp"],
+            obj["props"],
+        )
 
         logging.info(
-            "Entry to MixPanel : Payments\n"
-            + "payment_id : "
-            + str(payment.id)
-            + "\nuser_id : "
-            + payment.user
-            + "\n"
-            + str(count + skip + 1)
-            + " "
-            + str(props)
-            + " "
-            + str(payment.timestamp)
-            + "\n"
+            LOG_FORMAT.format(
+                **{
+                    "from": f"Mongodb, Payments",
+                    "data": json.dumps(obj, indent=4, default=str),
+                    "time": datetime.now(),
+                }
+            )
         )
         set_last_entry("Payment", count + skip + 1)
 
 
 def fetch_and_upload_transactions(skip=0):
-    for count, transaction in enumerate(
-        Transaction.objects.only("user", "timestamp", "amount", "product", "type").skip(
-            skip
-        )
-    ):
-        props = {
-            "product": transaction.product,
-            "type": transaction.type,
-            "amount": transaction.amount,
+    for count, transaction in enumerate(Transaction.objects.skip(skip)):
+        collection_name = "transactions"
+        document = transaction.to_mongo().to_dict()
+        document["_id"] = str(document["_id"])
+        obj = {
+            "distinct_id": document[
+                MIXPANEL_IMPORT_STRUCTURE[collection_name]["distinct_id"]
+            ],
+            "event_name": MIXPANEL_IMPORT_STRUCTURE[collection_name]["event_name"],
+            "timestamp": document[
+                MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
+            ].timestamp(),
+            "props": {
+                **{
+                    key["name"]: document[key["name"]]
+                    if key["name"] in document
+                    else key["default"]
+                    for key in MIXPANEL_IMPORT_STRUCTURE[collection_name]["props"]
+                },
+                **{
+                    "$insert_id": document[
+                        MIXPANEL_IMPORT_STRUCTURE[collection_name]["$insert_id"]
+                    ]
+                },
+            },
         }
 
         main.import_data(
-            transaction.user, "Transaction", transaction.timestamp.timestamp(), props
+            obj["distinct_id"],
+            obj["event_name"],
+            obj["timestamp"],
+            obj["props"],
         )
-        print(count + skip + 1, props, transaction.timestamp)
+
         logging.info(
-            "Entry to MixPanel : Transactions\n"
-            + "transaction_id : "
-            + str(transaction.id)
-            + "\nuser_id : "
-            + transaction.user
-            + "\n"
-            + str(count + skip + 1)
-            + " "
-            + str(props)
-            + " "
-            + str(transaction.timestamp)
-            + "\n"
+            LOG_FORMAT.format(
+                **{
+                    "from": f"Mongodb, transactions",
+                    "data": json.dumps(obj, indent=4, default=str),
+                    "time": datetime.now(),
+                }
+            )
         )
         set_last_entry("Transaction", count + skip + 1)
 
