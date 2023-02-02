@@ -1,5 +1,6 @@
 import logging
 import mongodb_dump_import
+import mongodb_import
 
 logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 
