@@ -35,7 +35,7 @@ def fetch_and_upload_payments(skip=0):
             "credits": payment.credits,
         }
 
-        main.import_data(payment.user, "Payment", payment.timestamp, props)
+        main.import_data(payment.user, "Payment", payment.timestamp.timestamp(), props)
         print(count + skip + 1, props, payment.timestamp)
 
         logging.info(
@@ -67,7 +67,9 @@ def fetch_and_upload_transactions(skip=0):
             "amount": transaction.amount,
         }
 
-        main.import_data(transaction.user, "Transaction", transaction.timestamp, props)
+        main.import_data(
+            transaction.user, "Transaction", transaction.timestamp.timestamp(), props
+        )
         print(count + skip + 1, props, transaction.timestamp)
         logging.info(
             "Entry to MixPanel : Transactions\n"

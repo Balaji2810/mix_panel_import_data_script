@@ -59,7 +59,7 @@ def start():
                         ],
                         "timestamp": document[
                             MIXPANEL_IMPORT_STRUCTURE[collection_name]["timestamp"]
-                        ],
+                        ].timestamp(),
                         "props": {
                             **{
                                 key["name"]: document[key["name"]]
@@ -75,6 +75,7 @@ def start():
                                         "$insert_id"
                                     ]
                                 ]
+                                + "B5"
                             },
                         },
                     }
