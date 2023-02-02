@@ -169,3 +169,4 @@ cython_debug/
 .vs/ProjectSettings.json
 .vs/slnx.sqlite
 .vs/VSWorkspaceState.json
+mixpanel_last_entry.json
