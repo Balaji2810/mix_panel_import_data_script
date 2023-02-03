@@ -1,5 +1,5 @@
 import logging
-import mongodb_dump_load
+import dump_load
 import mongodb_load
 import argparse
 import datetime
@@ -41,8 +41,7 @@ if __name__ == "__main__":
     g.add_argument(
         "-d",
         "--dumps",
-        help="Fetch data from S3 dumps",
-        action="store_true",
+        help="Fetch data from 'S3' or 'local' dumps",
     )
 
     args = parser.parse_args()
@@ -50,6 +49,5 @@ if __name__ == "__main__":
         # Import data from MongoDB to MixPanel
         mongodb_load.start(args.mongodb[0], args.mongodb[1], args.timezone)
     if args.dumps:
-        print("Dumps")
-        # Import data from dump(gzip) file
-        mongodb_dump_load.start()
+        # Import data from S3 or local dump(gzip) file
+        dump_load.start(args.dumps)
