@@ -13,21 +13,21 @@ config = configparser.ConfigParser()
 config.read("config.ini")
 
 
-def get_last_entry():
-    try:
-        with open("mixpanel_last_entry.json", "r") as openfile:
-            json_object = json.load(openfile)
-        return json_object
-    except:
-        return {"Payment": 0, "Transaction": 0}
+# def get_last_entry():
+#     try:
+#         with open("mixpanel_last_entry.json", "r") as openfile:
+#             json_object = json.load(openfile)
+#         return json_object
+#     except:
+#         return {"Payment": 0, "Transaction": 0}
 
 
-def set_last_entry(name, last_entry):
-    json_object = get_last_entry()
-    json_object[name] = last_entry
-    json_object = json.dumps(json_object, indent=4)
-    with open("mixpanel_last_entry.json", "w") as outfile:
-        outfile.write(json_object)
+# def set_last_entry(name, last_entry):
+#     json_object = get_last_entry()
+#     json_object[name] = last_entry
+#     json_object = json.dumps(json_object, indent=4)
+#     with open("mixpanel_last_entry.json", "w") as outfile:
+#         outfile.write(json_object)
 
 
 # def fetch_and_upload_payments(skip=0):
