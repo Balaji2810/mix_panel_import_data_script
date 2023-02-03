@@ -53,5 +53,7 @@ def start():
                     mixpanel_import.import_data(
                         document, collection_name, f"Mongodb dump, {file}"
                     )
+                print()
+                print("-" * 50)
     except Exception as e:
         print(e)

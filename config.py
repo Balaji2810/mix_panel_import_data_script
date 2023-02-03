@@ -1,3 +1,6 @@
+from models import Payment, Transaction
+
+
 MIXPANEL_IMPORT_STRUCTURE = {
     "payments": {
         "event_name": "Payments",
@@ -5,6 +8,7 @@ MIXPANEL_IMPORT_STRUCTURE = {
         "$insert_id": "_id",
         "timestamp": "timestamp",
         "props": [{"name": "amount", "default": 0}, {"name": "credits", "default": 0}],
+        "collection": Payment,
     },
     "transactions": {
         "event_name": "Transactions",
@@ -16,6 +20,7 @@ MIXPANEL_IMPORT_STRUCTURE = {
             {"name": "product", "default": ""},
             {"name": "type", "default": ""},
         ],
+        "collection": Transaction,
     },
 }
 
