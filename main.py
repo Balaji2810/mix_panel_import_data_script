@@ -1,6 +1,6 @@
 import logging
-import dump_load
-import mongodb_load
+from scripts import dump_load
+from scripts import mongodb_load
 import argparse
 import datetime
 import re

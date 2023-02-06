@@ -4,9 +4,10 @@ import gzip
 import bson
 import os
 from config import MIXPANEL_IMPORT_STRUCTURE, LOG_FORMAT
-import mixpanel_import
 import boto3
 import configparser
+
+from . import mixpanel_import
 
 config = configparser.ConfigParser()
 config.read("secret.ini")

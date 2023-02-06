@@ -2,11 +2,12 @@ import configparser
 from mongoengine import connect, disconnect
 import json
 import logging
-import mixpanel_import
 from config import MIXPANEL_IMPORT_STRUCTURE, LOG_FORMAT
 import datetime
 from bson.objectid import ObjectId
 from mongoengine.queryset.visitor import Q
+
+from . import mixpanel_import
 
 config = configparser.ConfigParser()
 config.read("secret.ini")
@@ -50,13 +51,13 @@ config.read("secret.ini")
 def fetch_and_upload(collection_name, start_datetime, end_datetime):
     print(MIXPANEL_IMPORT_STRUCTURE[collection_name]["collection"])
     collection = MIXPANEL_IMPORT_STRUCTURE[collection_name]["collection"].objects(
-        # Q(id__gt=get_object_id(start_datetime))
-        # & Q(
-        #     id__lt=get_object_id(
-        #         end_datetime
-        #         + datetime.timedelta(days=1)  # end date is included in the range
-        #     )
-        # )
+        Q(id__gt=get_object_id(start_datetime))
+        & Q(
+            id__lt=get_object_id(
+                end_datetime
+                + datetime.timedelta(days=1)  # end date is included in the range
+            )
+        )
     )
     doc_count = collection.count()
     print(

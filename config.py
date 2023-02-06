@@ -1,4 +1,4 @@
-from models import Payment, Transaction
+from scripts.models import Payment, Transaction
 
 
 MIXPANEL_IMPORT_STRUCTURE = {
