@@ -36,6 +36,7 @@ class Payment(Document):
     product_name = db.StringField(required=True, default="")
     transaction = db.StringField(null=True, default=True)
     status = db.EnumField(PaymentStatus, required=True)
+    invoice_details = db.DictField(default={})
 
 
 class Transaction(Document):

@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("secret.ini")
 
 project_token = config["MIXPANEL"]["project_token"]
 api_key = config["MIXPANEL"]["api_key"]

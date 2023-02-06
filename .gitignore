@@ -171,3 +171,9 @@ cython_debug/
 .vs/VSWorkspaceState.json
 mixpanel_last_entry.json
 log.txt
+mixpanel_test.py
+load_dummy_data.py
+load_dummy_data.py
+dumps/payments.json
+dumps/transactions.json
+load_dummy_data.py

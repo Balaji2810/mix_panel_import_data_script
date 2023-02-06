@@ -1,5 +1,4 @@
 import configparser
-from models import Payment, Transaction
 from mongoengine import connect, disconnect
 import json
 import logging
@@ -10,7 +9,7 @@ from bson.objectid import ObjectId
 from mongoengine.queryset.visitor import Q
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("secret.ini")
 
 
 # def get_last_entry():
@@ -49,14 +48,15 @@ config.read("config.ini")
 
 
 def fetch_and_upload(collection_name, start_datetime, end_datetime):
+    print(MIXPANEL_IMPORT_STRUCTURE[collection_name]["collection"])
     collection = MIXPANEL_IMPORT_STRUCTURE[collection_name]["collection"].objects(
-        Q(id__gt=get_object_id(start_datetime))
-        & Q(
-            id__lt=get_object_id(
-                end_datetime
-                + datetime.timedelta(days=1)  # end date is included in the range
-            )
-        )
+        # Q(id__gt=get_object_id(start_datetime))
+        # & Q(
+        #     id__lt=get_object_id(
+        #         end_datetime
+        #         + datetime.timedelta(days=1)  # end date is included in the range
+        #     )
+        # )
     )
     doc_count = collection.count()
     print(
@@ -73,11 +73,14 @@ def fetch_and_upload(collection_name, start_datetime, end_datetime):
             f"--->{count}/{doc_count} of documents imported to mixpanel",
             end="\r",
         )
+
         document = document.to_mongo().to_dict()
         document["_id"] = str(document["_id"])
+
         mixpanel_import.import_data(
             document, collection_name, f"Mongodb, {collection_name}"
         )
+
     print()
     print("-" * 50)
 

@@ -9,7 +9,7 @@ import boto3
 import configparser
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read("secret.ini")
 
 
 def get_s3_client():
