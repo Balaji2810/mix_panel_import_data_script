@@ -11,7 +11,7 @@ __pycache__/
 
 #gzip file
 *.gz
-./dumps
+dumps/
 
 # Distribution / packaging
 .Python
